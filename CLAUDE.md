@@ -42,6 +42,12 @@ Ciężar od trenera (ocena) to tylko podpowiedź, ucięty do +5% najcięższej s
 ## Nastrój trenera
 Postęp = ćwiczenia z co najmniej jedną serią / wszystkie. Poniżej 1/3: obrzydzenie („Fuj.”), do 2/3: dezaprobata („Słabo.”), od 2/3: bicepsy („Prawie.”), komplet: papieros („Climax.”). Strzykawka pokazuje faktyczny postęp, pusta tylko przy komplecie.
 
+## Gadka konia (`www/gadka.js`)
+- Docinki losowane bez powtórek (ostatnie 8) według sytuacji: start (dni od ostatniego treningu: pierwszy, świeży 0–1, ok 2–4, leniwy 5–9, martwy 10+), nastrój w trakcie, zdarzenie po serii (rekord, mało/dużo powtórzeń, lżej/ciężej niż podpowiedź), przerwa od 4 min, trening ponad 90 min, ekran końca.
+- Styl: zaczepnie i złośliwie, żarty z igieł i koksu, bez wulgaryzmów. Wspólny żart: leniwego wyprzedzi hydraulik; czasem hydraulik nuci piosenkę z kabaretu (ucięta przed końcem).
+- **Reguła 21:** gdy w liczbach sytuacji pojawi się 21 (ciężar, powtórzenia, minuty, dni przerwy, liczba serii, dzień miesiąca), koń zawsze wtrąca skojarzenie z hydraulikiem. Ta sama reguła jest w zasadach dla modelu (aplikacja i workflow trenera).
+- Nowe docinki dopisuj w `G` w `gadka.js`; zmienne w nawiasach: `{imie}`, `{dni}`, `{r}`, `{cel}`, `{kg}`, `{min}`.
+
 ## Otwarte
 - Przegląd reguł ciężaru przez model raz w miesiącu, po 4–6 treningach w aplikacji (decyzja właściciela).
 

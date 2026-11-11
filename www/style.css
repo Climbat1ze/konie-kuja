@@ -104,3 +104,8 @@ textarea.code{font-family:var(--f-num);font-size:12px;min-height:160px}
 .ocena ul{margin:4px 0;padding-left:18px}
 .ocena li{margin:3px 0}
 .h-coach{border-left-color:var(--horse)}
+.bump svg{animation:bump .5s ease-out}.bump .say{animation:pop .35s ease-out}
+@keyframes bump{0%{transform:rotate(0)}30%{transform:rotate(-8deg) scale(1.08)}60%{transform:rotate(5deg)}100%{transform:rotate(0)}}
+@keyframes pop{0%{transform:scale(.85);opacity:.3}100%{transform:scale(1);opacity:1}}
+.hero svg{animation:oddech 3.2s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes oddech{0%,100%{transform:scale(1)}50%{transform:scale(1.025,1.015)}}
