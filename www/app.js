@@ -241,13 +241,17 @@ function checkOcena(out,h,model){const ids=new Set(Object.keys(h.serie)),ciezary
   const punkty=(out.punkty||[]).map(x=>String(x).slice(0,200)).filter(Boolean).slice(0,3);
   if(!punkty.length)throw new Error("trener nic nie napisał");
   return {punkty,ciezary,model,czas:new Date().toISOString()}}
-async function claudeRequest(payload){
+async function claudeRequest(payload,meta){
   const api=ghApi(),H=ghH();
   const id=new Date().toISOString().replace(/[-:.TZ]/g,"").slice(0,14)+"-"+Math.random().toString(36).slice(2,7);
   const put=await withTimeout(fetch(api+"prosby/"+id+".json",{method:"PUT",headers:{...H,"Content-Type":"application/json"},body:JSON.stringify({message:"prośba "+id,content:b64e(JSON.stringify(payload))})}),20000);
   if(put.status===401||put.status===403)throw new Error("token GitHub odrzucony ("+put.status+")");
-  if(put.status===404)throw new Error("nie widzę repo "+c.repo);
+  if(put.status===404)throw new Error("nie widzę repo "+D.claude.repo);
   if(!put.ok)throw new Error("zapis prośby: HTTP "+put.status);
+  /* Prośba czeka w telefonie, dopóki nie przyjdzie odpowiedź: gdy GitHub się spóźni, dociągnie ją checkPending(). */
+  (D.pending=D.pending||[]).push({id,typ:payload.typ||"trening",...(meta||{}),t:Date.now()});save();
+  V.polling=V.polling||new Set();V.polling.add(id);
+  try{
   const t0=Date.now();
   while(Date.now()-t0<240000){
     await new Promise(r=>setTimeout(r,6000));
@@ -256,12 +260,35 @@ async function claudeRequest(payload){
     if(!g||g.status===404)continue;
     if(!g.ok)throw new Error("odczyt: HTTP "+g.status);
     const out=JSON.parse(b64d((await g.json()).content));
+    dropPending(id);
     if(out.status!=="ok")throw new Error(out.powod||"Claude nie odpowiedział");
     return out;
   }
-  throw new Error("Claude nie odpowiedział w 4 minuty");
+  throw new Error("Claude jeszcze myśli (GitHub się spóźnia). Odpowiedź pokażę sama, gdy przyjdzie");
+  }finally{V.polling.delete(id)}
 }
-async function askClaude(wish){return checkOut(await claudeRequest(promptData(wish,true)),"Claude")}
+function dropPending(id){D.pending=(D.pending||[]).filter(p=>p.id!==id);save()}
+/* Dociąga spóźnione odpowiedzi: przy starcie, po powrocie do aplikacji i co 30 s, gdy coś czeka. */
+let pendingBusy=false;
+async function checkPending(){
+  if(pendingBusy||!hasClaude()||!(D.pending||[]).length)return;pendingBusy=true;
+  try{for(const p of [...D.pending]){
+    if(V.polling&&V.polling.has(p.id))continue;
+    if(Date.now()-p.t>864e5){dropPending(p.id);continue}
+    const g=await fetch(ghApi()+"odpowiedzi/"+p.id+".json?t="+Date.now(),{headers:ghH(),cache:"no-store"}).catch(()=>null);
+    if(!g||!g.ok)continue;
+    let out;try{out=JSON.parse(b64d((await g.json()).content))}catch(e){continue}
+    dropPending(p.id);
+    if(out.status!=="ok"){toast("Trener (spóźniony): "+(out.powod||"błąd"));continue}
+    try{
+      if(p.typ==="ocena"){const h=D.historia.find(h=>h.id===p.hid);if(h){h.ocena=checkOcena(out,h,"Claude");save();toast("Trener ocenił trening z "+fmt(h.data)+". Zobacz Historię.")}}
+      else if(p.typ==="zamiana"){if(D.aktywny&&D.aktywny.lista.includes(p.slot)){V.altAi={slot:p.slot,items:checkZamiana(out)};V.open=p.slot;V.alts=true;toast("Trener dobrał zamiennik: "+exById(realId(p.slot)).nazwa+".")}}
+      else{V.ai={...checkOut(out,"Claude"),for:p.wish};V.wish=p.wish;toast("Trener odpisał na „"+String(p.wish).slice(0,40)+"”. Zobacz Przebuduj.")}
+    }catch(e){toast("Trener (spóźniony): "+e.message)}
+    render();
+  }}finally{pendingBusy=false}
+}
+async function askClaude(wish){return checkOut(await claudeRequest(promptData(wish,true),{wish}),"Claude")}
 async function geminiJSON(payload){
   const ai=D.ai||{};if(!ai.key)throw new Error("brak klucza");
   if(!ai.model){ai.model=await pickModel(ai.key);D.ai=ai;save()}
@@ -285,7 +312,7 @@ function checkZamiana(out){const known=allEx();
     return {id,nazwa:String(id?known[id].nazwa:x.nazwa).slice(0,60),schemat:String(x.schemat||(id?known[id].schemat:"3×12")).slice(0,30),kg:+x.kg>0&&+x.kg<500?+x.kg:null,dlaczego:String(x.dlaczego||"").slice(0,120)}});
   if(!items.length)throw new Error("trener nie znalazł zamiennika");return items}
 async function askZamiana(slot,powod){
-  if(hasClaude())return checkZamiana(await claudeRequest(zamianaData(slot,powod,true)));
+  if(hasClaude())return checkZamiana(await claudeRequest(zamianaData(slot,powod,true),{slot}));
   return checkZamiana(await geminiJSON(zamianaData(slot,powod,false)));
 }
 /* Przywrócenie historii z repo (np. po odinstalowaniu): scala z tym, co jest w telefonie. */
@@ -304,7 +331,7 @@ function mergeBackup(j){if(!Array.isArray(j.historia))throw new Error("to nie je
   if(!D.imie&&j.imie)D.imie=j.imie;save();return k}
 const hasClaude=()=>!!(D.claude&&D.claude.token&&D.claude.repo);
 async function askOcena(h){
-  if(hasClaude()){const out=await claudeRequest(ocenaData(h,true));backupToRepo().catch(()=>{});return checkOcena(out,h,"Claude")}
+  if(hasClaude()){const out=await claudeRequest(ocenaData(h,true),{hid:h.id});backupToRepo().catch(()=>{});return checkOcena(out,h,"Claude")}
   return checkOcena(await geminiJSON(ocenaData(h,false)),h,D.ai.model);
 }
 async function askModel(wish){
@@ -336,6 +363,7 @@ function sheet(){
     <button class="btn wide" data-sheet="ai">Trener (model)${D.claude&&D.claude.token?" · Claude ✓":D.ai&&D.ai.key?" · Gemini ✓":""}</button>
     <button class="btn wide" data-act="rename">Zmień imię</button>
     <button class="btn wide" data-act="wipe">${V.confirmWipe?"Na pewno? Kliknij jeszcze raz":"Wyczyść historię"}</button>
+    ${(D.pending||[]).length?`<div class="why">Czeka na trenera: ${D.pending.length}. Odpowiedź pokaże się sama.</div>`:""}
     <div class="label" style="text-align:center">wersja ${esc(window.KK_WERSJA||"dev")} · historia zostaje przy aktualizacji</div>
     <button class="btn ghost wide" data-sheet="">Zamknij</button></div>`;
   if(V.sheet==="export"){const txt=JSON.stringify({format:"konie-kuja-kopia-1",imie:D.imie,zapisano:new Date().toISOString(),historia:D.historia,alternatywy:D.alternatywy,altInfo:D.altInfo||{}});
@@ -433,5 +461,8 @@ $app.addEventListener("click",async e=>{
   }
 });
 setInterval(()=>{if(V.scr==="workout"&&D.aktywny){const c=document.querySelector(".clock");if(c)c.textContent=elapsed()}},15000);
+setInterval(()=>{if((D.pending||[]).length)checkPending()},30000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkPending()});
 render();
+checkPending();
 })();
