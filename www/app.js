@@ -129,21 +129,48 @@ function history(){
   return `<div class="scr"><div class="top"><h2>HISTORIA</h2></div><div class="label">Ostatnie treningi</div><div>${D.historia.slice(0,20).map(h=>{const t=D.plan.treningi[h.typ];return `<div class="h-item"><div class="h-top"><span>${fmt(h.data)}</span><span>${esc(t?t.nazwa:"Z ŻYCZENIA")}</span><span class="chip">${(n=>n===0?"dziś":n===1?"wczoraj":n+" dni temu")(days(h.data,new Date()))}</span></div><div class="h-ex">${Object.entries(h.serie).map(([id,ss])=>esc(exById(id).nazwa)+" "+ss.map(x=>(x.kg==null?"BW":x.kg)+"×"+x.r).join(", ")).join(" · ")}</div></div>`}).join("")}</div>
   <div class="label">Rekordy (najcięższa seria)</div><div class="pr">${Object.entries(pr).sort((a,b)=>b[1]-a[1]).slice(0,12).map(([id,kg])=>`<span>${esc(exById(id).nazwa)}</span><b>${kg} kg</b>`).join("")}</div></div>${nav()}`;
 }
-const KEYS={klat:"klata",piers:"klata",bic:"biceps",ramio:"biceps",tric:"triceps",bark:"barki",plec:"plecy",grzbiet:"plecy",nog:"nogi",udo:"nogi",pośladk:"nogi",brzuch:"brzuch",core:"brzuch",wznos:"brzuch",kaloryfer:"brzuch"};
+/* Przebuduj bez modelu: rdzenie słów → partie, z negacją („bez nóg”, „nie klata”, „bark boli”). */
+const KEYS=[["klat","klata"],["piers","klata"],["cyc","klata"],["pec","klata"],
+ ["plec","plecy"],["grzbiet","plecy"],["najszersz","plecy"],["kaptur","plecy"],["trapez","plecy"],["szrug","plecy"],
+ ["bark","barki"],["delt","barki"],
+ ["bic","biceps"],["dwuglowy ram","biceps"],["tric","triceps"],["trojglow","triceps"],
+ ["rece","biceps triceps"],["reka","biceps triceps"],["lapy","biceps triceps"],["ramion","biceps triceps"],["ramie","biceps triceps"],
+ ["nog","nogi"],["noz","nogi"],["ud","nogi"],["czworoglow","nogi"],["poslad","nogi"],["tylek","nogi"],["dup","nogi"],["lydk","nogi"],["przysiad","nogi"],
+ ["brzuch","brzuch"],["core","brzuch"],["kaloryfer","brzuch"],["szesciopak","brzuch"],["abs","brzuch"],["wznos","brzuch"],["desk","brzuch"],["allah","brzuch"],
+ ["gora","klata plecy barki"],["gorna","klata plecy barki"],["dol","nogi"],["fbw","klata plecy nogi brzuch"],["cale cialo","klata plecy nogi brzuch"],["wszystko","klata plecy nogi brzuch"]];
+const NEG=/^(nie|nic|bez|oprocz|poza|zadnych|zadnej|zadnego|zero|omin\w*|pomin\w*|odpusc\w*|odpuszcz\w*|daruj\w*|oszczedz\w*|unikam|unikaj)$/;
+const PAIN=/\b(bol\w*|kontuzj\w*|nadciagn\w*|naderwan\w*|stluczon\w*)\b/;
+const fold=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/ł/g,"l");
+function parseWish(txt){
+  const want=new Set(),skip=new Set();
+  fold(txt).split(/[,.;!?\n]|\s(?:ale|a|oraz|i|plus)\s/).forEach(cl=>{
+    const words=cl.split(/[^a-z0-9]+/).filter(Boolean),pain=PAIN.test(cl);
+    words.forEach((w,i)=>{
+      const hit=KEYS.find(([k])=>k.includes(" ")?cl.includes(k)&&w===k.split(" ")[0]:(k.length<3?w===k||w.startsWith(k)&&w.length<=k.length+2:w.startsWith(k)));
+      if(!hit)return;
+      const neg=pain||words.slice(Math.max(0,i-3),i).some(x=>NEG.test(x));
+      hit[1].split(" ").forEach(part=>(neg?skip:want).add(part));
+    });
+  });
+  skip.forEach(s=>want.delete(s));
+  return {want:[...want],skip:[...skip]};
+}
 function build(txt){
-  const t=txt.toLowerCase(),want=[...new Set(Object.entries(KEYS).filter(([k])=>t.includes(k)).map(([,v])=>v))];
-  const per={brzuch:2,klata:3,biceps:2,triceps:2,barki:2,plecy:3,nogi:4},pick=[],all=Object.values(allEx());
+  const {want,skip}=parseWish(txt),t=fold(txt);
+  const many=want.length>=4;
+  const per={brzuch:2,klata:many?2:3,biceps:2,triceps:2,barki:2,plecy:many?2:3,nogi:many?2:4},pick=[],all=Object.values(allEx());
   ["brzuch","klata","plecy","barki","nogi","triceps","biceps"].filter(w=>want.includes(w)).forEach(w=>{
-    let c=all.filter(e=>(e.partie||[]).includes(w)&&!pick.includes(e.id));
+    let c=all.filter(e=>(e.partie||[]).includes(w)&&!pick.includes(e.id)&&!(e.partie||[]).some(x=>skip.includes(x)));
     if(w==="brzuch"&&t.includes("wznos"))c.sort((a,b)=>/wznosy n/i.test(b.nazwa)-/wznosy n/i.test(a.nazwa));
     c.slice(0,per[w]).forEach(e=>pick.push(e.id));
   });
-  return {want,pick};
+  return {want,skip,pick};
 }
 function rebuild(){
   const r=build(V.wish);
   return `<div class="scr"><div class="top"><h2>PRZEBUDUJ</h2></div><div class="coach">${horse("flex")}<span>Na co dziś masz ochotę, siłaczu?</span></div>
   <label class="label" for="wish">Napisz po swojemu</label><textarea id="wish">${esc(V.wish)}</textarea>
+  ${r.skip.length?`<div class="why">Pomijam: ${r.skip.join(", ")}.</div>`:""}
   ${r.pick.length?`<div class="label">Propozycja · ${r.want.join(", ")} · ok. ${r.pick.length*7} min</div><div>${r.pick.map((id,i)=>{const s=suggest(id),e=exById(id);return `<div class="h-item"><div class="h-top"><span>${i+1}. ${esc(e.nazwa)}</span><span>${s.kg==null?"—":s.kg+" kg"}</span></div><div class="h-ex">${esc(e.schemat)} · <span class="chip ${s.cls}">${esc(s.chip)}</span></div></div>`}).join("")}</div><button class="btn red wide" data-act="go-custom">Startuj ten trening</button>`
   :`<div class="why">Nie rozpoznałem partii. Wpisz np.: klata, plecy, biceps, triceps, barki, nogi, brzuch.</div>`}</div>${nav()}`;
 }
