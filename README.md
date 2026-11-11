@@ -18,10 +18,16 @@ Aktualizacja: zainstaluj nowy plik na stary. Historia zostaje. Wyjątek: wersje 
 - Postęp treningu jako strzykawka: im więcej ćwiczeń, tym głębiej wciśnięty tłok.
 - Koniec treningu: „Climax.”, trener koń zapala papierosa.
 - Historia i rekordy.
-- „Przebuduj”: wpisujesz, na co masz ochotę (np. „klata i biceps”), aplikacja składa trening.
+- „Przebuduj”: wpisujesz, na co masz ochotę (np. „klata i biceps, bez nóg, bark boli”), aplikacja składa trening. Bez klucza: skrypt w telefonie (rdzenie słów, negacja, ból). Z kluczem Gemini: „Zapytaj trenera” wysyła życzenie do modelu.
 - Kopia historii jako tekst do skopiowania i wgrania na innym telefonie.
 
-Wszystkie dane są tylko w telefonie. Aplikacja nie łączy się z internetem.
+Wszystkie dane są tylko w telefonie. Z internetem łączy się tylko „Zapytaj trenera”, i tylko gdy w telefonie jest klucz.
+
+## Trener na modelu (opcjonalnie)
+1. Klucz: aistudio.google.com → Get API key → Create API key. Nie włączaj płatności, wtedy klucz nic nie kosztuje (darmowy poziom, limity w AI Studio).
+2. W aplikacji: ⋯ → Klucz modelu → wklej → Zapisz i sprawdź. Aplikacja sama wybiera model Flash.
+3. Klucz nigdy nie trafia do repo. Do Google idą: życzenie, lista ćwiczeń planu i nazwy ćwiczeń z 4 ostatnich treningów, bez imienia i ciężarów. Na darmowym poziomie Google może używać tych treści do ulepszania usług.
+4. Błąd, brak internetu albo limit: zostaje lista ze skryptu.
 
 ## Ciężar na dziś
 | Dni od ostatniego razu | Ciężar |

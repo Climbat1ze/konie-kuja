@@ -1,5 +1,10 @@
 {
   "appId": "pl.koniekuja.app",
   "appName": "Konie Kują",
-  "webDir": "www"
+  "webDir": "www",
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  }
 }
