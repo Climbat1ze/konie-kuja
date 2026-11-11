@@ -3,7 +3,7 @@ name: Buduj APK
 on:
   push:
     branches: [main]
-    paths: ["www/**", "package.json", "capacitor.config.json", ".github/workflows/apk.yml"]
+    paths: ["www/**", "ikona/**", "package.json", "capacitor.config.json", ".github/workflows/apk.yml"]
   workflow_dispatch:
 
 permissions:
@@ -32,6 +32,8 @@ jobs:
         run: |
           npx cap add android
           npx cap sync android
+      - name: Ikona (strzykawka)
+        run: cp -r ikona/res/. android/app/src/main/res/
       - name: Stały podpis (aktualizacje bez odinstalowania)
         run: |
           mkdir -p ~/.android

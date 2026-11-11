@@ -1,5 +1,7 @@
 # KONIE KUJĄ
 
+<img src="ikona/ikona-512.png" width="96" alt="Ikona: strzykawka">
+
 Dziennik treningu na Androida dla kilku kolegów z siłowni. *Chcesz urosnąć? A boisz się igieł?*
 
 ## Instalacja na telefonie
@@ -40,6 +42,9 @@ Plan domyślny jest w `www/plan.js`. Własny plan wgrywa się w aplikacji: ⋯ �
 
 ## Podpis
 `podpis/debug.keystore` to klucz debug Androida (hasło `android`) trzymany w repo, żeby każda wersja miała ten sam podpis i aktualizacja nie wymagała odinstalowania. To aplikacja dla znajomych, nie dla sklepu.
+
+## Ikona
+Strzykawka jak pasek postępu w aplikacji. Pliki PNG w `ikona/res/` (wszystkie gęstości Androida), generator `ikona/generuj.js` (Playwright). Workflow kopiuje je do projektu Androida przed budową.
 
 ## Licencje
 Fonty: `www/fonts/LICENCJE.md`.
