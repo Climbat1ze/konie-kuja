@@ -9,7 +9,7 @@ Dziennik treningu na Androida dla kilku kolegów z siłowni. *Chcesz urosnąć? 
 2. Otwórz pobrany plik. Android zapyta o zgodę na instalację z przeglądarki: zezwól.
 3. Przy pierwszym uruchomieniu wpisz imię.
 
-Aktualizacja: zainstaluj nowy plik na stary. Historia zostaje.
+Aktualizacja: zainstaluj nowy plik na stary. Historia zostaje. Wyjątek: wersje 0.1.1–0.1.4 miały przypadkowy podpis; z nich trzeba raz odinstalować aplikację (najpierw ⋯ → Kopia historii).
 
 ## Co robi (wersja 0.1)
 - 4 zestawy: PUSH 1, PULL, PUSH 2, NOGI. Kolejny w cyklu podświetlony na czerwono.
@@ -41,7 +41,7 @@ Lokalnie: `npm install`, `npx cap add android`, `cd android && ./gradlew assembl
 Plan domyślny jest w `www/plan.js`. Własny plan wgrywa się w aplikacji: ⋯ → Wgraj nowy plan.
 
 ## Podpis
-`podpis/debug.keystore` to klucz debug Androida (hasło `android`) trzymany w repo, żeby każda wersja miała ten sam podpis i aktualizacja nie wymagała odinstalowania. To aplikacja dla znajomych, nie dla sklepu.
+`podpis/debug.keystore` to klucz debug Androida (hasło `android`) trzymany w repo, żeby każda wersja miała ten sam podpis i aktualizacja nie wymagała odinstalowania. Workflow wpisuje go wprost do `build.gradle` i po budowie sprawdza odcisk SHA-256 w APK; inny podpis zatrzymuje wydanie. To aplikacja dla znajomych, nie dla sklepu.
 
 ## Ikona
 Strzykawka jak pasek postępu w aplikacji. Pliki PNG w `ikona/res/` (wszystkie gęstości Androida), generator `ikona/generuj.js` (Playwright). Workflow kopiuje je do projektu Androida przed budową.
