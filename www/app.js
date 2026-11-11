@@ -153,6 +153,7 @@ function sheet(){
     <button class="btn wide" data-sheet="import">Wgraj kopię</button>
     <button class="btn wide" data-sheet="plan">Wgraj nowy plan</button>
     <button class="btn wide" data-act="rename">Zmień imię</button>
+    <button class="btn wide" data-act="wipe">${V.confirmWipe?"Na pewno? Kliknij jeszcze raz":"Wyczyść historię"}</button>
     <button class="btn ghost wide" data-sheet="">Zamknij</button></div>`;
   if(V.sheet==="export"){const txt=JSON.stringify({format:"konie-kuja-kopia-1",imie:D.imie,zapisano:new Date().toISOString(),historia:D.historia,alternatywy:D.alternatywy});
     return `<div class="sheet" role="dialog" aria-label="Kopia"><div class="label">Kopia historii · ${D.historia.length} treningów</div><textarea class="code" id="exp" readonly>${esc(txt)}</textarea><button class="btn red wide" data-act="copy">Kopiuj do schowka</button><div class="why">Wklej w WhatsApp albo mail do osoby, która trzyma kopie. Wysyłka prosto do repo przyjdzie w kolejnej wersji.</div><button class="btn ghost wide" data-sheet="">Zamknij</button></div>`}
@@ -191,6 +192,7 @@ $app.addEventListener("click",async e=>{
   if(d.alt!==undefined){if(d.alt)D.aktywny.zamiany[V.open]="ALT:"+d.alt;else delete D.aktywny.zamiany[V.open];save();set({alts:false,cur:null});return}
   switch(d.act){
     case "name":{const v=(document.getElementById("name").value||"").trim();if(!v){toast("Wpisz imię.");return}D.imie=v.slice(0,24);save();render();break}
+    case "wipe":if(V.confirmWipe){D.historia=[];D.aktywny=null;save();V.confirmWipe=false;V.sheet=null;V.scr="home";toast("Historia wyczyszczona. Zaczynasz od zera.")}else{V.confirmWipe=true;render();setTimeout(()=>{V.confirmWipe=false;render()},4000)}break;
     case "rename":D.imie="";save();set({scr:"home",sheet:null});break;
     case "set":{const id=realId(V.open),e=exById(id),sg=suggest(id),c=V.cur||{kg:sg.kg,r:e.powt};(D.aktywny.serie[V.open]=D.aktywny.serie[V.open]||[]).push({kg:c.kg,r:c.r});save();set({cur:{...c}});break}
     case "alts":set({alts:!V.alts});break;
