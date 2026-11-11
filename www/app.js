@@ -274,7 +274,12 @@ function sheet(){
 }
 function render(){
   const v={home,workout:D.aktywny?workout:home,finish,history,rebuild}[V.scr]||home;
+  const prev=$app.querySelector(".scr"),top=prev?prev.scrollTop:0,same=V.lastScr===V.scr,sh=$app.querySelector(".sheet"),shTop=sh?sh.scrollTop:0;
   $app.innerHTML=v()+sheet()+(V.toast?`<div class="toast" role="status">${esc(V.toast)}</div>`:"");
+  /* Ten sam ekran: zostań w tym samym miejscu listy (bez skoku na górę przy −/+). Nowy ekran: od góry. */
+  const now=$app.querySelector(".scr");if(now&&same)now.scrollTop=top;
+  const ns=$app.querySelector(".sheet");if(ns&&sh)ns.scrollTop=shTop;
+  V.lastScr=V.scr;
 }
 
 /* ---------- akcje ---------- */
