@@ -45,6 +45,8 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px soli
 .clock{font-family:var(--f-num);font-weight:700;font-size:15px;border:2px solid var(--ink);padding:2px 6px}
 .coach{display:flex;gap:8px;align-items:center;font-weight:700;font-size:14px}
 .coach svg{width:46px;height:46px;flex:none}
+.big-coach{font-size:15px}
+.big-coach svg{width:84px;height:auto}
 .syr{display:flex;flex-direction:column;gap:2px}
 .syr svg{width:100%;height:auto;display:block}
 .syr .label{display:flex;justify-content:space-between}
