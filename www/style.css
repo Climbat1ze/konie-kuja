@@ -1,12 +1,13 @@
 /* Paint + Windows 95. Jeden akcent: czerwony podkoszulek trenera. Limonka tylko w strzykawce. */
-@font-face{font-family:"Permanent Marker";src:url(fonts/permanent-marker.woff2) format("woff2");font-display:swap}
+@font-face{font-family:"Caveat Brush";src:url(fonts/caveat-brush.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212,U+FEFF,U+FFFD;font-display:swap}
+@font-face{font-family:"Caveat Brush";src:url(fonts/caveat-brush-ext.woff2) format("woff2");unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;font-display:swap}
 @font-face{font-family:"Comic Neue";src:url(fonts/comic-neue-400.woff2) format("woff2");font-weight:400;font-display:swap}
 @font-face{font-family:"Comic Neue";src:url(fonts/comic-neue-700.woff2) format("woff2");font-weight:700;font-display:swap}
 :root{
   --chrome:#c3c3c3;--chrome-hi:#fff;--chrome-lo:#6b6b6b;--titlebar:#0b1f8f;
   --canvas:#fff;--ink:#141414;--red:#e3201b;--sweat:#2f9be0;--juice:#b5e61d;
   --horse:#9a5b2c;--horse-lt:#c98b55;--muted:#5d5d5d;
-  --f-display:"Permanent Marker","Comic Sans MS","Chalkboard SE",cursive;
+  --f-display:"Caveat Brush","Comic Sans MS","Chalkboard SE",cursive;
   --f-body:"Comic Neue","Comic Sans MS","Chalkboard SE",system-ui,sans-serif;
   --f-num:ui-monospace,"Roboto Mono","Courier New",monospace;
   color-scheme:light;
@@ -20,7 +21,7 @@ body{font-family:var(--f-body);font-size:16px;line-height:1.4;display:flex;flex-
 .tb-btn{width:18px;height:16px;background:var(--chrome);border:2px solid;border-color:var(--chrome-hi) var(--chrome-lo) var(--chrome-lo) var(--chrome-hi);color:#000;font-size:10px;line-height:10px;text-align:center;font-style:normal}
 .app{flex:1;min-height:0;display:flex;flex-direction:column;position:relative;overflow:hidden}
 .scr{flex:1;overflow-y:auto;padding:14px 16px 12px;display:flex;flex-direction:column;gap:12px}
-.logo{font-family:var(--f-display);font-size:38px;line-height:.95;text-align:center;transform:rotate(-2deg);margin-top:4px}
+.logo{font-family:var(--f-display);font-size:46px;line-height:.95;text-align:center;transform:rotate(-2deg);margin-top:4px}
 .logo b{color:var(--red);font-weight:400}
 .tag{font-size:13px;text-align:center;color:var(--muted);margin-top:-4px}
 .hero{display:flex;align-items:flex-end;gap:6px}
@@ -28,9 +29,9 @@ body{font-family:var(--f-body);font-size:16px;line-height:1.4;display:flex;flex-
 .bubble{position:relative;border:3px solid var(--ink);border-radius:18px 18px 18px 4px;padding:8px 10px;font-weight:700;font-size:15px;background:#fff;margin-bottom:60px;min-width:0}
 .label{font-family:var(--f-num);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .next{border:3px dashed var(--ink);padding:8px 10px;display:flex;justify-content:space-between;gap:8px;align-items:center}
-.next strong{font-family:var(--f-display);font-size:22px;font-weight:400}
+.next strong{font-family:var(--f-display);font-size:27px;font-weight:400}
 .grid4{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.big{font-family:var(--f-display);font-size:24px;padding:14px 6px 10px;border:3px solid var(--ink);background:#fff;color:var(--ink);box-shadow:4px 4px 0 var(--ink);text-align:center;line-height:1.05}
+.big{font-family:var(--f-display);font-size:29px;padding:14px 6px 10px;border:3px solid var(--ink);background:#fff;color:var(--ink);box-shadow:4px 4px 0 var(--ink);text-align:center;line-height:1.05}
 .big small{display:block;font-family:var(--f-body);font-size:12px;color:var(--muted);margin-top:4px}
 .big.on{background:var(--red);color:#fff}.big.on small{color:#fff}
 .big:active,.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
@@ -40,7 +41,7 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px soli
 .nav button{flex:1;border:0;background:none;padding:10px 4px 12px;font-weight:700;font-size:14px}
 .nav button[aria-current="true"]{background:var(--ink);color:#fff}
 .top{display:flex;align-items:center;gap:10px}
-.top h2{font-family:var(--f-display);font-weight:400;font-size:28px;margin:0;flex:1;line-height:1}
+.top h2{font-family:var(--f-display);font-weight:400;font-size:33px;margin:0;flex:1;line-height:1}
 .clock{font-family:var(--f-num);font-weight:700;font-size:15px;border:2px solid var(--ink);padding:2px 6px}
 .coach{display:flex;gap:8px;align-items:center;font-weight:700;font-size:14px}
 .coach svg{width:46px;height:46px;flex:none}
@@ -75,7 +76,7 @@ button:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px soli
 .why{font-size:12.5px;color:var(--muted);background:#f6f6f6;border-left:4px solid var(--ink);padding:6px 8px}
 .climax{align-items:center;text-align:center}
 .climax svg.horse{width:220px;height:auto}
-.climax h2{font-family:var(--f-display);font-weight:400;font-size:44px;margin:0;transform:rotate(-3deg)}
+.climax h2{font-family:var(--f-display);font-weight:400;font-size:52px;margin:0;transform:rotate(-3deg)}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}
 .stat{border:3px solid var(--ink);padding:6px 4px}
 .stat b{display:block;font-family:var(--f-num);font-size:20px}
