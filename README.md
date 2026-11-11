@@ -9,14 +9,15 @@ Dziennik treningu na Androida dla kilku kolegów z siłowni. *Chcesz urosnąć? 
 2. Otwórz pobrany plik. Android zapyta o zgodę na instalację z przeglądarki: zezwól.
 3. Przy pierwszym uruchomieniu wpisz imię.
 
-Aktualizacja: zainstaluj nowy plik na stary. Historia zostaje. Wyjątek: wersje 0.1.1–0.1.4 miały przypadkowy podpis; z nich trzeba raz odinstalować aplikację (najpierw ⋯ → Kopia historii).
+Aktualizacja: zainstaluj nowy plik na stary. Historia zostaje (dane aplikacji Android przenosi do nowej wersji). Numer wersji: ⋯ na dole. Po odinstalowaniu: ⋯ → Przywróć kopię z repo albo Wgraj kopię. Wyjątek: wersje 0.1.1–0.1.4 miały przypadkowy podpis; z nich trzeba raz odinstalować aplikację (najpierw ⋯ → Kopia historii).
 
 ## Co robi (wersja 0.1)
 - 4 zestawy: PUSH 1, PULL, PUSH 2, NOGI. Kolejny w cyklu podświetlony na czerwono.
 - Ciężar na dziś liczony z historii i przerwy (reguły niżej), zawsze do zmiany przyciskami −/+.
 - Zapis serii, komentarz do każdego ćwiczenia (widać go w historii i przy następnym razie), zamiana ćwiczenia na alternatywę, własne alternatywy.
 - Postęp treningu jako strzykawka: im więcej ćwiczeń, tym głębiej wciśnięty tłok.
-- Koniec treningu: „Climax.”, trener koń zapala papierosa.
+- Koniec treningu: „Climax.”, trener koń zapala papierosa. „Trener ocenia”: 2–3 punkty i ciężar na następny raz (podpowiedź, najwyżej +5%), po ocenie kopia historii idzie do prywatnego repo.
+- Zamiana ćwiczenia: lista alternatyw, własna alternatywa albo „Zapytaj trenera” z powodem (zajęta maszyna, ból). Seria zapisuje się pod ćwiczeniem, które faktycznie zrobiłeś.
 - Historia i rekordy.
 - „Przebuduj”: wpisujesz, na co masz ochotę (np. „klata i biceps, bez nóg, bark boli”), aplikacja składa trening. Bez klucza: skrypt w telefonie (rdzenie słów, negacja, ból). Z kluczem Gemini: „Zapytaj trenera” wysyła życzenie do modelu.
 - Kopia historii jako tekst do skopiowania i wgrania na innym telefonie.

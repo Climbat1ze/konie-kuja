@@ -28,6 +28,8 @@ jobs:
           java-version: 21
       - name: Zależności
         run: npm install --no-audit --no-fund
+      - name: Numer wersji w aplikacji
+        run: echo "window.KK_WERSJA=\"0.1.${GITHUB_RUN_NUMBER}\";" > www/wersja.js
       - name: Projekt Android z www/
         run: |
           npx cap add android

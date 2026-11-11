@@ -100,3 +100,7 @@ textarea.code{font-family:var(--f-num);font-size:12px;min-height:160px}
 .note{min-height:56px;font-size:15px}
 .h-note{font-size:13px;color:var(--ink);background:#f6f6f6;border-left:4px solid var(--red);padding:3px 6px}
 .sheet input{margin-top:2px}
+.ocena{width:100%;text-align:left;border:3px solid var(--ink);padding:8px 10px;background:#fff}
+.ocena ul{margin:4px 0;padding-left:18px}
+.ocena li{margin:3px 0}
+.h-coach{border-left-color:var(--horse)}
