@@ -7,6 +7,7 @@ Dziennik treningu siłowego na Androida (APK) dla właściciela i kilku kolegów
 - **Poufność (repo publiczne):** w kodzie, commitach i plikach nie ma imion, historii treningów, notatek zdrowotnych, nazw prywatnych repo ani kluczy. Historia i kopie żyją tylko w telefonie i w prywatnym repo właściciela.
 - **Klucze:** klucz Gemini i token GitHub tylko w telefonie (⋯ → Trener (model)). Token Claude'a tylko w sekretach prywatnego repo. Nic z tego nie trafia tutaj.
 - Każda zmiana w `www/`, `ikona/`, `package.json` lub workflow na `main` buduje nowe APK i wydanie. Commit = wydanie dla kolegów: przed pushem test w przeglądarce (Playwright, `www/index.html` przez lokalny serwer).
+- Aktualizacja blokowana na Samsungu: przyczyną był Auto Blocker (Ustawienia → Zabezpieczenia i prywatność), potrafi włączyć się sam. Na czas aktualizacji wyłączyć.
 - Nie zmieniaj `podpis/debug.keystore`: inny klucz = koledzy muszą odinstalować aplikację i tracą historię.
 
 ## Budowa
@@ -41,4 +42,4 @@ Postęp = ćwiczenia z co najmniej jedną serią / wszystkie. Poniżej 1/3: obrz
 
 ## Otwarte
 - Przegląd reguł ciężaru przez model raz w miesiącu, po 4–6 treningach w aplikacji (decyzja właściciela).
-- Instalacja aktualizacji na Androidzie bez odinstalowania: sprawdzić blokadę źródła instalacji (zob. README).
+

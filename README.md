@@ -9,7 +9,7 @@ Dziennik treningu na Androida dla kilku kolegów z siłowni. *Chcesz urosnąć? 
 2. Otwórz pobrany plik. Android zapyta o zgodę na instalację z przeglądarki: zezwól.
 3. Przy pierwszym uruchomieniu wpisz imię.
 
-Aktualizacja: zainstaluj nowy plik na stary. Historia zostaje (dane aplikacji Android przenosi do nowej wersji). Numer wersji: ⋯ na dole. Po odinstalowaniu: ⋯ → Przywróć kopię z repo albo Wgraj kopię. Wyjątek: wersje 0.1.1–0.1.4 miały przypadkowy podpis; z nich trzeba raz odinstalować aplikację (najpierw ⋯ → Kopia historii).
+Aktualizacja: zainstaluj nowy plik na stary. Samsung blokuje instalację? Wyłącz Auto Blocker (Ustawienia → Zabezpieczenia i prywatność → Auto Blocker), potrafi włączyć się sam. Historia zostaje (dane aplikacji Android przenosi do nowej wersji). Numer wersji: ⋯ na dole. Po odinstalowaniu: ⋯ → Przywróć kopię z repo albo Wgraj kopię. Wyjątek: wersje 0.1.1–0.1.4 miały przypadkowy podpis; z nich trzeba raz odinstalować aplikację (najpierw ⋯ → Kopia historii).
 
 ## Co robi (wersja 0.1)
 - 4 zestawy: PUSH 1, PULL, PUSH 2, NOGI. Kolejny w cyklu podświetlony na czerwono.
