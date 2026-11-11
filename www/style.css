@@ -97,3 +97,6 @@ textarea.code{font-family:var(--f-num);font-size:12px;min-height:160px}
 .smoke{animation:smoke 3s ease-in-out infinite}
 @keyframes smoke{0%{opacity:.2;transform:translateY(4px)}50%{opacity:.9}100%{opacity:.2;transform:translateY(-6px)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+.note{min-height:56px;font-size:15px}
+.h-note{font-size:13px;color:var(--ink);background:#f6f6f6;border-left:4px solid var(--red);padding:3px 6px}
+.sheet input{margin-top:2px}

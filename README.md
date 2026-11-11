@@ -14,7 +14,7 @@ Aktualizacja: zainstaluj nowy plik na stary. Historia zostaje. Wyjątek: wersje 
 ## Co robi (wersja 0.1)
 - 4 zestawy: PUSH 1, PULL, PUSH 2, NOGI. Kolejny w cyklu podświetlony na czerwono.
 - Ciężar na dziś liczony z historii i przerwy (reguły niżej), zawsze do zmiany przyciskami −/+.
-- Zapis serii, zamiana ćwiczenia na alternatywę, własne alternatywy.
+- Zapis serii, komentarz do każdego ćwiczenia (widać go w historii i przy następnym razie), zamiana ćwiczenia na alternatywę, własne alternatywy.
 - Postęp treningu jako strzykawka: im więcej ćwiczeń, tym głębiej wciśnięty tłok.
 - Koniec treningu: „Climax.”, trener koń zapala papierosa.
 - Historia i rekordy.
@@ -24,6 +24,9 @@ Aktualizacja: zainstaluj nowy plik na stary. Historia zostaje. Wyjątek: wersje 
 Wszystkie dane są tylko w telefonie. Z internetem łączy się tylko „Zapytaj trenera”, i tylko gdy w telefonie jest klucz.
 
 ## Trener na modelu (opcjonalnie)
+**Claude (pierwszeństwo):** telefon zapisuje prośbę w prywatnym repo właściciela, tam GitHub Actions pyta Claude'a na subskrypcji i odkłada odpowiedź. W telefonie jest tylko token GitHub do tego jednego repo (Contents: odczyt i zapis); token Claude'a zostaje w sekretach prywatnego repo. Odpowiedź w 1–2 minuty. Ustawienie: ⋯ → Trener (model) → repo i token.
+
+**Gemini (zapas):**
 1. Klucz: aistudio.google.com → Get API key → Create API key. Nie włączaj płatności, wtedy klucz nic nie kosztuje (darmowy poziom, limity w AI Studio).
 2. W aplikacji: ⋯ → Klucz modelu → wklej → Zapisz i sprawdź. Aplikacja sama wybiera model Flash.
 3. Klucz nigdy nie trafia do repo. Do Google idą: życzenie, lista ćwiczeń planu i nazwy ćwiczeń z 4 ostatnich treningów, bez imienia i ciężarów. Na darmowym poziomie Google może używać tych treści do ulepszania usług.
