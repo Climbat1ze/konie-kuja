@@ -122,9 +122,20 @@ function altAiBox(slot){
   ${r?r.map((x,i)=>`<button data-altai="${i}">🐴 ${esc(x.nazwa)} · ${esc(x.schemat||"")}${x.kg?" · "+x.kg+" kg":""}<br><small>${esc(x.dlaczego||"")}</small></button>`).join(""):""}`;
 }
 function realId(id){return (D.aktywny.zamiany||{})[id]||id}
+/* Najcięższa seria ćwiczenia w treningu i porównanie z poprzednim razem przed danym dniem. */
+function topSet(ss){return (ss||[]).reduce((b,x)=>!b||(x.kg||0)>(b.kg||0)||((x.kg||0)===(b.kg||0)&&x.r>b.r)?x:b,null)}
+function prevOf(id,h){const i=D.historia.indexOf(h);for(let k=i+1;k<D.historia.length;k++){const x=D.historia[k];if(x.serie[id])return {data:x.data,top:topSet(x.serie[id])}}return null}
+function delta(now,prev){if(!now||!prev||!prev.top)return {cls:"new",txt:"pierwszy raz"};
+  const a=now.kg||0,b=prev.top.kg||0;
+  if(a!==b){const d=Math.round((a-b)*10)/10;return {cls:d>0?"up":"down",txt:(d>0?"▲ +":"▼ ")+d+" kg"}}
+  if(now.r!==prev.top.r){const d=now.r-prev.top.r;return {cls:d>0?"up":"down",txt:(d>0?"▲ +":"▼ ")+d+" powt."}}
+  return {cls:"same",txt:"= tyle samo"}}
+const fmtSet=x=>x?(x.kg==null?"BW":x.kg)+"×"+x.r:"–";
 function exCard(id,i){
   const rid=realId(id),e=exById(rid),sg=suggest(rid),sets=D.aktywny.serie[id]||[],open=V.open===id;
-  let h=`<div class="ex ${sets.length?"done":""}"><button class="ex-btn" data-open="${esc(id)}" aria-expanded="${open}"><div class="ex-head"><span class="ex-name">${i+1}. ${esc(e.nazwa)}${(D.aktywny.notatki||{})[id]?" ✎":""}</span><span class="ex-kg">${sg.kg==null?"ciało":sg.kg+" kg"}</span></div><div class="ex-meta"><span>${esc(e.schemat)}${e.na_reke?" · na rękę":""}</span><span class="chip ${sg.cls}">${esc(sg.chip)}</span></div></button>`;
+  let h=`<div class="ex ${sets.length?"done":""}"><button class="ex-btn" data-open="${esc(id)}" aria-expanded="${open}"><div class="ex-head"><span class="ex-name">${i+1}. ${esc(e.nazwa)}${(D.aktywny.notatki||{})[id]?" ✎":""}</span><span class="ex-kg">${sg.kg==null?"ciało":sg.kg+" kg"}</span></div><div class="ex-meta"><span>${esc(e.schemat)}${e.na_reke?" · na rękę":""}</span><span class="chip ${sg.cls}">${esc(sg.chip)}</span></div>${(()=>{const pr=exHistory(rid)[0];if(!pr)return "";
+    const nowTop=topSet(sets.filter(s=>(s.ex||rid)===rid)),dl=nowTop?delta(nowTop,{top:{kg:pr.kg,r:pr.r}}):null;
+    return `<div class="last">ostatnio <b>${fmtSet({kg:pr.kg,r:pr.r})}</b> · ${fmt(pr.data)}${dl?` <span class="dl ${dl.cls}">${dl.txt}</span>`:""}</div>`})()}</button>`;
   if(sets.length)h+=`<div class="sets">${sets.map((s,k)=>`<button class="set" data-del="${esc(id)}" data-k="${k}" aria-label="Usuń serię">${s.ex&&s.ex!==rid?"↔ ":""}${s.kg==null?"BW":s.kg}×${s.r}</button>`).join("")}</div>`;
   if(open){
     const c=V.cur||{kg:sg.kg,r:e.powt};const alts=[...((D.plan.alternatywy||{})[id]||[]),...(D.alternatywy[id]||[])];
@@ -166,10 +177,30 @@ function finish(){
 }
 function history(){
   if(!D.historia.length)return `<div class="scr"><div class="top"><h2>HISTORIA</h2></div><p class="empty">Pusto. Pierwszy trening zapisze się tutaj. Masz kopię z innego telefonu? ⋯ → Wgraj kopię.</p></div>${nav()}`;
-  const pr={};D.historia.forEach(h=>Object.entries(h.serie).forEach(([id,ss])=>ss.forEach(x=>{if(x.kg!=null&&(!pr[id]||x.kg>pr[id]))pr[id]=x.kg})));
-  return `<div class="scr"><div class="top"><h2>HISTORIA</h2></div><div class="label">Ostatnie treningi</div><div>${D.historia.slice(0,20).map(h=>{const t=D.plan.treningi[h.typ];return `<div class="h-item"><div class="h-top"><span>${fmt(h.data)}</span><span>${esc(t?t.nazwa:"Z ŻYCZENIA")}</span><span class="chip">${(n=>n===0?"dziś":n===1?"wczoraj":n+" dni temu")(days(h.data,new Date()))}</span></div><div class="h-ex">${Object.entries(h.serie).map(([id,ss])=>esc(exById(id).nazwa)+" "+ss.map(x=>(x.kg==null?"BW":x.kg)+"×"+x.r).join(", ")).join(" · ")}</div>${h.notatki?Object.entries(h.notatki).map(([id,t])=>`<div class="h-note">✎ ${esc(exById(id).nazwa)}: ${esc(t)}</div>`).join(""):""}${h.ocena?`<div class="h-note h-coach">🐴 ${h.ocena.punkty.map(esc).join(" ")}</div>`:""}</div>`}).join("")}</div>
-  <div class="label">Rekordy (najcięższa seria)</div><div class="pr">${Object.entries(pr).sort((a,b)=>b[1]-a[1]).slice(0,12).map(([id,kg])=>`<span>${esc(exById(id).nazwa)}</span><b>${kg} kg</b>`).join("")}</div></div>${nav()}`;
+  const tab=V.hTab||"treningi",open=V.hOpen||{};
+  const tabs=`<div class="themes tabs">${[["treningi","Treningi"],["cwiczenia","Ćwiczenia"]].map(([k,t])=>`<button data-htab="${k}" aria-pressed="${tab===k}">${t}</button>`).join("")}</div>`;
+  let body;
+  if(tab==="treningi"){
+    body=D.historia.slice(0,40).map(h=>{const t=D.plan.treningi[h.typ],ids=Object.keys(h.serie);
+      const rows=ids.map(id=>{const now=topSet(h.serie[id]),prev=prevOf(id,h),dl=delta(now,prev);return {id,now,prev,dl}});
+      const up=rows.filter(r=>r.dl.cls==="up").length,down=rows.filter(r=>r.dl.cls==="down").length,isOpen=!!open[h.id];
+      return `<div class="h-item"><button class="h-row" data-hopen="${esc(h.id)}" aria-expanded="${isOpen}"><span class="h-date">${fmt(h.data)}</span><span class="h-name">${esc(t?t.nazwa:"Z ŻYCZENIA")}</span><span class="h-sum">${ids.length} ćw.${up?` <span class="dl up">▲${up}</span>`:""}${down?` <span class="dl down">▼${down}</span>`:""}</span><span class="h-arr">${isOpen?"▴":"▾"}</span></button>
+      ${isOpen?`<div class="h-det">${rows.map(r=>`<div class="h-ex-row"><div><b>${esc(exById(r.id).nazwa)}</b><div class="h-ex">${h.serie[r.id].map(fmtSet).join(", ")}</div></div><div class="h-cmp"><span class="dl ${r.dl.cls}">${r.dl.txt}</span>${r.prev?`<small>${fmt(r.prev.data)}: ${fmtSet(r.prev.top)}</small>`:""}</div></div>`).join("")}
+        ${h.notatki?Object.entries(h.notatki).map(([id,t])=>`<div class="h-note">✎ ${esc(exById(id).nazwa)}: ${esc(t)}</div>`).join(""):""}${h.ocena?`<div class="h-note h-coach">🐴 ${h.ocena.punkty.map(esc).join(" ")}</div>`:""}</div>`:""}</div>`}).join("");
+  }else{
+    const ids=[...new Set(D.historia.flatMap(h=>Object.keys(h.serie)))];
+    const list=ids.map(id=>({id,h:exHistory(id)})).filter(x=>x.h.length).sort((a,b)=>b.h[0].data.localeCompare(a.h[0].data));
+    body=list.map(({id,h})=>{const last=h[0],first=h[h.length-1],isOpen=!!open["ex:"+id],pts=h.slice(0,8).reverse();
+      const dl=h.length>1?delta({kg:last.kg,r:last.r},{top:{kg:h[1].kg,r:h[1].r}}):{cls:"new",txt:"1 raz"};
+      return `<div class="h-item"><button class="h-row" data-hopen="ex:${esc(id)}" aria-expanded="${isOpen}"><span class="h-name">${esc(exById(id).nazwa)}</span>${spark(pts)}<span class="h-sum"><b>${fmtSet({kg:last.kg,r:last.r})}</b> <span class="dl ${dl.cls}">${dl.txt}</span></span><span class="h-arr">${isOpen?"▴":"▾"}</span></button>
+      ${isOpen?`<div class="h-det">${h.slice(0,6).map(x=>`<div class="h-ex-row"><span>${fmt(x.data)}</span><b>${fmtSet({kg:x.kg,r:x.r})}</b></div>`).join("")}${h.length>1&&first.kg&&last.kg?`<div class="h-ex">Od ${fmt(first.data)}: ${first.kg} → ${last.kg} kg (${h.length} treningi)</div>`:""}</div>`:""}</div>`}).join("");
+  }
+  return `<div class="scr"><div class="top"><h2>HISTORIA</h2></div>${tabs}<div>${body}</div></div>${nav()}`;
 }
+/* Mini-wykres najcięższej serii (ostatnie do 8 razy). */
+function spark(pts){const v=pts.map(x=>x.kg||0);if(v.length<2||!Math.max(...v))return `<span class="spark"></span>`;
+  const w=60,h=18,mn=Math.min(...v),mx=Math.max(...v),sx=w/(v.length-1),y=x=>mx===mn?h/2:h-2-(x-mn)/(mx-mn)*(h-4);
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" aria-hidden="true"><polyline points="${v.map((x,i)=>(i*sx).toFixed(1)+","+y(x).toFixed(1)).join(" ")}" fill="none" stroke="var(--line)" stroke-width="2"/><circle cx="${w}" cy="${y(v[v.length-1]).toFixed(1)}" r="2.5" fill="var(--red)"/></svg>`}
 /* Przebuduj bez modelu: rdzenie słów → partie, z negacją („bez nóg”, „nie klata”, „bark boli”). */
 const KEYS=[["klat","klata"],["piers","klata"],["cyc","klata"],["pec","klata"],
  ["plec","plecy"],["grzbiet","plecy"],["najszersz","plecy"],["kaptur","plecy"],["trapez","plecy"],["szrug","plecy"],
@@ -341,6 +372,19 @@ async function restoreFromRepo(){
   if(!g.ok)throw new Error("HTTP "+g.status);
   return mergeBackup(JSON.parse(b64d((await g.json()).content)));
 }
+function backupJSON(){return JSON.stringify({format:"konie-kuja-kopia-1",imie:D.imie,zapisano:new Date().toISOString(),historia:D.historia,alternatywy:D.alternatywy,altInfo:D.altInfo||{}})}
+const capPlugin=n=>{const C=window.Capacitor;if(!C)return null;return (C.Plugins&&C.Plugins[n])||(C.registerPlugin?C.registerPlugin(n):null)};
+/* Plik kopii do menu udostępniania Androida (Dysk Google, WhatsApp, mail). W przeglądarce: Web Share albo schowek. */
+async function shareBackup(){
+  const name="konie-kuja-"+(fold(D.imie||"kon").replace(/[^a-z0-9]+/g,"-")||"kon")+"-"+today()+".json",txt=backupJSON();
+  const isNative=!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());
+  if(isNative){const FS=capPlugin("Filesystem"),SH=capPlugin("Share");
+    const w=await FS.writeFile({path:name,data:txt,directory:"CACHE",encoding:"utf8"});
+    await SH.share({title:"Kopia Konie Kują",text:"Kopia historii treningów ("+D.historia.length+")",files:[w.uri],dialogTitle:"Zapisz kopię"});
+    D.kopia=new Date().toISOString();save();return "Wybierz, gdzie zapisać kopię."}
+  try{const f=new File([txt],name,{type:"application/json"});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:"Kopia Konie Kują"});return "Kopia udostępniona."}}catch(e){if(e&&e.name==="AbortError")return "Anulowane."}
+  await navigator.clipboard.writeText(txt);return "Udostępnianie niedostępne. Kopia w schowku."
+}
 function mergeBackup(j){if(!Array.isArray(j.historia))throw new Error("to nie jest kopia Konie Kują");
   const have=new Set(D.historia.map(h=>h.data+"|"+h.typ));let k=0;
   j.historia.forEach(h=>{if(h&&h.data&&h.serie&&!have.has(h.data+"|"+h.typ)){D.historia.push(h);k++}});D.historia.sort((a,b)=>b.data.localeCompare(a.data));
@@ -373,6 +417,7 @@ function rebuild(){
 }
 function sheet(){
   if(V.sheet==="more")return `<div class="sheet" role="dialog" aria-label="Więcej"><div class="label">Więcej</div>
+    <button class="btn wide" data-act="share">Zapisz kopię (Dysk, WhatsApp, mail)</button>
     <button class="btn wide" data-sheet="export">Kopia historii (skopiuj)</button>
     ${hasClaude()?`<button class="btn wide" data-act="backup">Wyślij kopię do repo${D.kopia?" (ostatnio "+fmt(D.kopia)+")":""}</button>`:""}
     ${hasClaude()?`<button class="btn wide" data-act="restore">Przywróć kopię z repo</button>`:""}
@@ -401,7 +446,7 @@ function sheet(){
     <button class="btn red wide" data-act="ai-save">${V.aiBusy?"Sprawdzam…":"Zapisz i sprawdź"}</button>
     ${D.ai&&D.ai.key?`<button class="btn ghost wide" data-act="ai-del">Usuń klucz</button>`:""}
     <button class="btn ghost wide" data-sheet="">Zamknij</button></div>`;
-  if(V.sheet==="import")return `<div class="sheet" role="dialog" aria-label="Wgraj kopię"><div class="label">Wklej kopię (JSON)</div><textarea class="code" id="imp"></textarea><button class="btn red wide" data-act="import">Wgraj i scal z historią</button><button class="btn ghost wide" data-sheet="">Zamknij</button></div>`;
+  if(V.sheet==="import")return `<div class="sheet" role="dialog" aria-label="Wgraj kopię"><div class="label">Plik kopii z telefonu</div><input type="file" id="impfile" accept=".json,application/json,text/plain"><div class="label">albo wklej tekst kopii</div><textarea class="code" id="imp"></textarea><button class="btn red wide" data-act="import">Wgraj i scal z historią</button><button class="btn ghost wide" data-sheet="">Zamknij</button></div>`;
   if(V.sheet==="plan")return `<div class="sheet" role="dialog" aria-label="Wgraj plan"><div class="label">Wklej plan (JSON w formacie plan.js)</div><textarea class="code" id="planin"></textarea><button class="btn red wide" data-act="plan">Podmień plan</button><button class="btn ghost wide" data-act="plan-reset">Przywróć plan domyślny</button><button class="btn ghost wide" data-sheet="">Zamknij</button></div>`;
   return "";
 }
@@ -433,6 +478,8 @@ function finishWorkout(){
 $app.addEventListener("input",e=>{if(e.target.id==="note"&&D.aktywny&&V.open){(D.aktywny.notatki=D.aktywny.notatki||{})[V.open]=e.target.value;clearTimeout(V.nt);V.nt=setTimeout(save,400);return}if(e.target.id==="wish"){V.wish=e.target.value;clearTimeout(V.wt);V.wt=setTimeout(()=>{const p=e.target.selectionStart;render();const t=document.getElementById("wish");if(t){t.focus();t.setSelectionRange(p,p)}},700)}});
 $app.addEventListener("click",async e=>{
   const b=e.target.closest("button");if(!b)return;const d=b.dataset;
+  if(d.htab){V.hTab=d.htab;render();return}
+  if(d.hopen){V.hOpen=V.hOpen||{};V.hOpen[d.hopen]=!V.hOpen[d.hopen];render();return}
   if(d.themeSet){D.motyw=d.themeSet;save();applyTheme();V.say=null;render();return}
   if(d.go!==undefined){set({scr:d.go,sheet:null});return}
   if(d.sheet!==undefined){set({sheet:d.sheet||null});return}
@@ -485,7 +532,9 @@ $app.addEventListener("click",async e=>{
     case "cl-del":D.claude=null;save();V.ai=null;V.sheet=null;toast("Claude odpięty.");break;
     case "ai-del":D.ai=null;save();V.ai=null;V.sheet=null;toast("Klucz usunięty. Przebuduj działa na skrypcie.");break;
     case "copy":{const t=document.getElementById("exp");try{await navigator.clipboard.writeText(t.value);toast("Skopiowane.")}catch(err){t.select();toast("Zaznaczone. Skopiuj ręcznie.")}break}
-    case "import":{try{const k=mergeBackup(JSON.parse(document.getElementById("imp").value));V.sheet=null;toast("Wgrane treningi: "+k+".")}catch(err){toast("To nie jest kopia Konie Kują.")}break}
+    case "share":{try{toast(await shareBackup())}catch(err){toast("Nie udało się: "+(err.message||err))}break}
+    case "import":{const fi=document.getElementById("impfile");if(fi&&fi.files&&fi.files[0]){try{const k=mergeBackup(JSON.parse(await fi.files[0].text()));V.sheet=null;toast("Wgrane z pliku treningi: "+k+".")}catch(err){toast("Ten plik to nie kopia Konie Kują.")}break}
+      try{const k=mergeBackup(JSON.parse(document.getElementById("imp").value));V.sheet=null;toast("Wgrane treningi: "+k+".")}catch(err){toast("To nie jest kopia Konie Kują.")}break}
     case "plan":{try{let t=document.getElementById("planin").value.trim().replace(/^[^{]*/,"").replace(/;\s*$/,"");const p=JSON.parse(t);if(!p.cykl||!p.treningi)throw 0;D.plan=p;save();V.sheet=null;toast("Plan podmieniony.")}catch(err){toast("Plan nieczytelny. Potrzebne pola cykl i treningi.")}break}
     case "plan-reset":D.plan=window.KK_PLAN;save();V.sheet=null;toast("Plan domyślny przywrócony.");break;
   }

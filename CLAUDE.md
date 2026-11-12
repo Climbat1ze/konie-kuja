@@ -22,6 +22,15 @@ Dziennik treningu siłowego na Androida (APK) dla właściciela i kilku kolegów
 - `alternatywy`, `altInfo` (zamienniki od trenera), `ai` (Gemini), `claude` (repo i token GitHub), `kopia` (data ostatniej kopii).
 - Aktualizacja APK na starą wersję zachowuje dane. Po odinstalowaniu: ⋯ → Przywróć kopię z repo albo Wgraj kopię.
 
+## Historia i postęp
+- Historia: zakładki „Treningi” (wiersz: data, trening, liczba ćwiczeń, ▲ ćwiczenia w górę, ▼ w dół; po kliknięciu serie i porównanie z poprzednim razem tego ćwiczenia) i „Ćwiczenia” (ostatni wynik, różnica do poprzedniego, mini-wykres najcięższej serii z 8 razy, po kliknięciu 6 ostatnich wyników).
+- Porównanie: najcięższa seria (`topSet`), najpierw kilogramy, przy równych kilogramach powtórzenia (`delta`). Poprzedni raz = starszy wpis w `historia` (tablica od najnowszego).
+- Karta ćwiczenia w treningu: stały wiersz „ostatnio 60×8 · 5.11”, po serii różnica ▲/▼/=.
+
+## Kopia poza telefonem
+- ⋯ → „Zapisz kopię”: plik JSON przez `@capacitor/filesystem` (katalog CACHE) i `@capacitor/share` do menu udostępniania Androida (Dysk, WhatsApp, mail). W przeglądarce Web Share albo schowek. ⋯ → Wgraj kopię przyjmuje plik albo wklejony tekst.
+- Logowanie i konta w chmurze świadomie odłożone (decyzja właściciela 2026-11-12): wracamy, gdy ktoś straci historię.
+
 ## Reguły ciężaru na dziś (`suggest()`)
 | Dni od ostatniego razu | Ciężar |
 |---|---|

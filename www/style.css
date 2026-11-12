@@ -116,3 +116,20 @@ textarea.code{font-family:var(--f-num);font-size:12px;min-height:160px}
 .themes{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .themes button{border:2px solid var(--ink);background:var(--paper);color:var(--ink);padding:8px 4px;font-weight:700}
 .themes button[aria-pressed="true"]{background:var(--ink);color:var(--on-ink)}
+.tabs{margin-bottom:4px}
+.h-row{all:unset;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto auto;gap:8px;align-items:center;width:100%;padding:4px 0;font-weight:700}
+.h-row .h-date{font-family:var(--f-num)}
+.h-row .h-sum{font-size:13px;font-weight:400;white-space:nowrap}
+.h-row .h-arr{font-size:14px;color:var(--muted)}
+.h-row:focus-visible{outline:3px solid var(--sweat)}
+.h-det{display:flex;flex-direction:column;gap:6px;padding:4px 0 6px}
+.h-ex-row{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;border-top:1px dashed var(--muted);padding-top:5px;font-size:14px}
+.h-ex-row>div:first-child{min-width:0}
+.h-cmp{display:flex;flex-direction:column;align-items:flex-end;white-space:nowrap}
+.h-cmp small{color:var(--muted);font-size:11.5px}
+.dl{font-family:var(--f-num);font-size:12px;font-weight:700;white-space:nowrap}
+.dl.up{color:#1f9d55}.dl.down{color:var(--red)}.dl.same,.dl.new{color:var(--muted)}
+:root[data-theme="dark"] .dl.up{color:#4fd18b}
+.last{font-size:12.5px;color:var(--muted)}.last b{color:var(--ink);font-family:var(--f-num)}
+.spark{width:60px;height:18px;display:inline-block}
+input[type=file]{font:inherit;font-size:14px;color:var(--ink)}
