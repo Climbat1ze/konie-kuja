@@ -20,6 +20,7 @@ const G={
   rekord:["Rekord? Podejrzane. Pokaż ręce, szukam śladów po igłach.","Nowy rekord. Koń dumny, ale głośno tego nie powie.","Rekord. Hydraulik może tylko pomarzyć."],
   przerwa:["{min} minut przerwy. Hydraulik w tym czasie przepchał dwa zlewy.","Kawa? Telefon? Seria sama się nie zrobi.","Halo, {imie}. Sztanga tęskni."],
   dlugo:["{min} minut? To już nie trening, to przeprowadzka.","Siedzisz tu {min} minut. Koń zaczyna płacić za stajnię."],
+  noc:["Pensja trenera nie starcza. Po zmroku dorabiam. Nie pytaj gdzie.","Dzień trener, noc windykacja. Masz u mnie zaległą serię.","Kij? Do baseballa. Gramy, jak skończysz trening.","Po zmroku stawka nocna: każda seria z dopłatą.","Kominiarka jest od zimna. Kij od kontroli jakości.","Z pensji trenera koń by nie wyżył. Stąd nocki.","Nie widziałeś mnie tu. Ja ciebie widzę. Zwłaszcza jak pomijasz serie."],
   h21:["21! Hydraulik przyjechał. Dwadzieścia jeden złotych za dojazd, robota osobno.","21? Hydraulik wita. Rury przetkane, teraz twoja kolej.","Dwadzieścia jeden. Słyszysz? Hydraulik nuci: "+PIOSENKA+" Dalej nie śpiewam.","21 to numer hydraulika. Zadzwoń, jak skończysz serię.","21. Hydraulik zostawił klucz francuski. Dla ciebie, na rozgrzewkę."],
   koniec:{fuj:["Koń się brzydzi. Tyle to on robi na rozgrzewkę.","Fuj. Hydraulik zrobił więcej przy jednym kranie."],meh:["Koń patrzy z politowaniem. Połowa to nie trening.","Pół roboty. Hydraulik też bierze za całość."],flex:["Papieros zostaje w paczce. Koń czeka na komplet.","Prawie. Prawie robi wielką różnicę, pyta hydraulik."],smoke:["Podkuty na cztery kopyta.","Komplet. Koń zapala i milczy z szacunkiem."]}
 };
@@ -33,6 +34,7 @@ function los(pula,vars){
 function ma21(...liczby){return liczby.some(x=>x!=null&&x!==""&&Math.floor(Math.abs(+x))===21)}
 function powiedz(syt,vars){vars=vars||{};
   if(ma21(...(vars.liczby||[])))return los(G.h21,vars);
+  if(vars.noc&&syt!=="pierwszy"&&Math.random()<0.3)return los(G.noc,vars);
   if(Math.random()<0.06&&["ok","swiezy","leniwy","fuj","meh","flex"].includes(syt))return "Hydraulik nuci: "+PIOSENKA+" Ty nie nucisz, ty kujesz.";
   const pula=syt.startsWith("koniec:")?G.koniec[syt.slice(7)]:G[syt];
   return los(pula||G.ok,vars);

@@ -42,6 +42,10 @@ Ciężar od trenera (ocena) to tylko podpowiedź, ucięty do +5% najcięższej s
 ## Nastrój trenera
 Postęp = ćwiczenia z co najmniej jedną serią / wszystkie. Poniżej 1/3: obrzydzenie („Fuj.”), do 2/3: dezaprobata („Słabo.”), od 2/3: bicepsy („Prawie.”), komplet: papieros („Climax.”). Strzykawka pokazuje faktyczny postęp, pusta tylko przy komplecie.
 
+## Motyw
+- ⋯ → Motyw: „Jak telefon” (domyślnie, `prefers-color-scheme`), „Dzień”, „Po zmroku”. Zapis w `D.motyw`, atrybut `data-theme` na `<html>`, kolory jako zmienne CSS (`--paper`, `--ink`, `--line`, `--soft`…). Kreski SVG przez `var(--line)`.
+- Po zmroku koń ma kominiarkę, kaptur, bluzę zamiast czerwonego podkoszulka i kij baseballowy. Gadka losuje wtedy (ok. 30%) docinki z puli `noc`: pensja trenera nie starcza, dorabia po zmroku. Reguła 21 ma pierwszeństwo.
+
 ## Gadka konia (`www/gadka.js`)
 - Docinki losowane bez powtórek (ostatnie 8) według sytuacji: start (dni od ostatniego treningu: pierwszy, świeży 0–1, ok 2–4, leniwy 5–9, martwy 10+), nastrój w trakcie, zdarzenie po serii (rekord, mało/dużo powtórzeń, lżej/ciężej niż podpowiedź), przerwa od 4 min, trening ponad 90 min, ekran końca.
 - Styl: zaczepnie i złośliwie, żarty z igieł i koksu, bez wulgaryzmów. Wspólny żart: leniwego wyprzedzi hydraulik; czasem hydraulik nuci piosenkę z kabaretu (ucięta przed końcem).
